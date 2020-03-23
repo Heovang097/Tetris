@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 66376498}
   m_Layer: 0
   m_Name: grid
-  m_TagString: Untagged
+  m_TagString: playGround
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -160,7 +160,7 @@ Transform:
   m_GameObject: {fileID: 66376495}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_Children:
   - {fileID: 648024166}
   m_Father: {fileID: 0}
@@ -178,10 +178,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64672d35f50c5f64f9ea1eb0109fe34b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playGround: {fileID: 0}
+  backGround: {fileID: 0}
+  playGround: {fileID: 66376495}
+  gridHeight: 20
+  gridWidth: 10
   prefabs: []
-  gridHeight: 0
-  gridWidth: 0
+  startX: 4
+  startY: 14
+  currentTime: 0
+  actionTime: 0.5
+  period: 0.5
+  activeBlock: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,7 +242,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 11
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -259,7 +266,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 5, y: 10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -277,7 +284,7 @@ GameObject:
   - component: {fileID: 648024167}
   m_Layer: 0
   m_Name: playGround
-  m_TagString: playGround
+  m_TagString: backGround
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -290,8 +297,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 648024165}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6, y: 10, z: 1}
+  m_LocalPosition: {x: 5, y: 10, z: 0}
+  m_LocalScale: {x: 10, y: 20, z: 0}
   m_Children: []
   m_Father: {fileID: 66376497}
   m_RootOrder: 0
