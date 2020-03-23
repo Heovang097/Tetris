@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 66376497}
   - component: {fileID: 66376496}
   - component: {fileID: 66376498}
+  - component: {fileID: 66376499}
   m_Layer: 0
   m_Name: grid
   m_TagString: playGround
@@ -173,7 +174,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 66376495}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64672d35f50c5f64f9ea1eb0109fe34b, type: 3}
   m_Name: 
@@ -189,6 +190,39 @@ MonoBehaviour:
   actionTime: 0.5
   period: 0.5
   activeBlock: {fileID: 0}
+--- !u!114 &66376499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66376495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52396bd5c3d545648aefe03ebac3cb50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backGround: {fileID: 0}
+  playGround: {fileID: 0}
+  gridHeight: 20
+  gridWidth: 10
+  prefabs: []
+  types:
+  - I
+  - iL
+  - L
+  - O
+  - S
+  - T
+  - Z
+  startX: 4
+  startY: 12
+  currentTime: 0
+  actionTime: 0.5
+  defaultPeriod: 0.5
+  delayTime: 0.15
+  holdTime: 0.15
+  holdPeriod: 0.15
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
