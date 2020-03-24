@@ -64,7 +64,7 @@ public class GridScripts2 : MonoBehaviour
             prefabs.Add(obj);
         }
 
-        Block.grid = new bool[gridWidth+1, gridHeight+1];
+        Block.grid = new bool[gridWidth, gridHeight+1];
         Block.gridWidth = gridWidth;
         Block.gridHeight = gridHeight;
     }
@@ -83,6 +83,27 @@ public class GridScripts2 : MonoBehaviour
         };
         blocks.Add(new Block(l,pivots[t] + new Vector2(startX,startY)));
         return blocks[blocks.Count - 1];
+    }
+
+    void Print()
+    {
+        using (StreamWriter sw = new StreamWriter(@"D:\Unity\Tetris\Assets\result.txt"))
+        {
+            List<string> lines = new List<string>();
+            for (int i = 0; i < gridHeight; i++)
+            {
+                string line = "";
+                for (int j = 0; j < gridWidth; j++)
+                    if (Block.grid[j, i] == false)
+                        line += "o";
+                    else
+                        line += "x";
+                lines.Add(line);
+            }
+            for (int i = lines.Count - 1; i >= 0; i--)
+                sw.WriteLine(lines[i]);
+            sw.Close();
+        }
     }
 
     // Update is called once per frame
@@ -125,11 +146,8 @@ public class GridScripts2 : MonoBehaviour
             if (currentTime > actionTime)
             {
                 actionTime += defaultPeriod;
-                foreach (Block block in blocks)
-                {
-                    block.Move(new Vector3(0,-1,0));
-                    block.CheckState();
-                }
+                activeBlock.Move(new Vector3(0,-1,0));
+                activeBlock.CheckState();
             }
         }
         else
@@ -137,24 +155,53 @@ public class GridScripts2 : MonoBehaviour
             if (activeBlock != null)
             {
                 int i;
-                List<int> deleteRow = new List<int>(4);
+                List<int> deleteRow = new List<int>();
                 List<Vector2> deletes= new List<Vector2>();
-                foreach (GameObject p in activeBlock.pieces)
+                List<int> checkPositionY = new List<int>();
+
+                foreach (GameObject go in activeBlock.pieces)
+                    if (!checkPositionY.Any(num => num == (int)go.transform.position.y))
+                        checkPositionY.Add((int)go.transform.position.y);
+                
+
+                foreach(int num in checkPositionY)
                 {
-                    for (i = 0; i <= gridWidth; i++)
-                        if (Block.grid[i, (int)p.transform.position.y] == false)
+                    for (i = 0; i < gridWidth; i++)
+                        if (Block.grid[i, num] == false)
                             break;
                     if (i == gridWidth)
-                        deleteRow.Add((int)p.transform.position.y);
-                    //deletes.Add(new Vector2(p.transform.position.x, p.transform.position.y));
+                        deleteRow.Add(num);
                 }
+
                 for (i = 0; i < gridWidth; i++)
+                {
                     foreach (int j in deleteRow)
                         deletes.Add(new Vector2(i, j));
+                }
 
+                if (deleteRow.Count > 0)
+                {
+                    Print();
+                    foreach (Vector2 v in deletes)
+                        blocks.First(b => b.pieces.Any(p => p.transform.position.x == v.x && p.transform.position.y == v.y)).Remove(v);///----------------------
 
-                foreach (Vector2 v in deletes)
-                    blocks.First(b => b.pieces.Any(p => p.transform.position.x == v.x && p.transform.position.y == v.y)).Remove(v);///----------------------
+                    int positionY = deleteRow.Max(d => d);
+
+                    List<GameObject> moveObjs = new List<GameObject>();
+
+                    foreach (Block block in blocks)
+                        moveObjs.AddRange(block.pieces.Where(p => p.transform.position.y > positionY));
+                    moveObjs.OrderBy(b => b.transform.position.y);
+                    for(int j = 0; j < moveObjs.Count; j++)
+                    {
+                        int x = (int)moveObjs[j].transform.position.x;
+                        int y = (int)moveObjs[j].transform.position.y;
+                        Block.grid[x, y] = false;
+                        moveObjs[j].transform.position += new Vector3(0, -deleteRow.Count, 0);
+                        Block.grid[x, y - deleteRow.Count] = true;
+                    }
+                    Print();
+                }
             }
             activeBlock = CreateBlock();
         }

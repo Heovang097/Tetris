@@ -65,6 +65,7 @@
     <Compile Include="Assets\Block.cs" />
     <Compile Include="Assets\GridScripts.cs" />
     <Compile Include="Assets\GridScripts2.cs" />
+    <None Include="Assets\result.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Unity/Tetris/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

@@ -105,7 +105,11 @@ namespace Assets
 
         public void Remove(Vector2 v)
         {
-            pieces.Remove(pieces.First(p => p.transform.position.x == v.x && p.transform.position.y == v.y));
+            GameObject go = pieces.First(p => p.transform.position.x == v.x && p.transform.position.y == v.y);
+            int index = pieces.IndexOf(go);
+            GameObject.Destroy(go);
+            //pieces.Remove(pieces.First(p => p.transform.position.x == v.x && p.transform.position.y == v.y));
+            pieces.RemoveAt(index);
             grid[(int)v.x, (int)v.y] = false;
         }
     }
