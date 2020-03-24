@@ -6,6 +6,8 @@ using UnityEditor;
 using Assets;
 using System.Linq;
 
+using System.Threading;
+
 public class GridScripts2 : MonoBehaviour
 {
     public GameObject backGround;
@@ -23,6 +25,16 @@ public class GridScripts2 : MonoBehaviour
         new List<Vector2>(4){new Vector2(1,0), new Vector2(2,0), new Vector2(0,-1), new Vector2(1,-1) },
         new List<Vector2>(4){new Vector2(1,0), new Vector2(0,-1), new Vector2(1,-1), new Vector2(2,-1) },
         new List<Vector2>(4){new Vector2(0,0), new Vector2(1,0), new Vector2(1,-1), new Vector2(2,-1) }
+    };
+    public List<Vector2> pivots = new List<Vector2>(7)
+    {
+        new Vector2(1, 0),
+        new Vector2(0,-1),
+        new Vector2(2,-1),
+        new Vector2(0, 0),
+        new Vector2(1, 0),
+        new Vector2(1, -1),
+        new Vector2(1, 0)
     };
     public List<Block> blocks = new List<Block>();
     public int startX;
@@ -42,7 +54,7 @@ public class GridScripts2 : MonoBehaviour
         playGround = GameObject.FindGameObjectWithTag("playGround");
         backGround = GameObject.FindGameObjectWithTag("backGround");
         startX = 4;
-        startY = 12;
+        startY = 19;
 
         DirectoryInfo dir = new DirectoryInfo("Assets/Resources/Prefabs2");
         FileInfo[] info = dir.GetFiles("*.prefab");
@@ -52,7 +64,7 @@ public class GridScripts2 : MonoBehaviour
             prefabs.Add(obj);
         }
 
-        Block.grid = new bool[gridWidth, gridHeight];
+        Block.grid = new bool[gridWidth+1, gridHeight+1];
         Block.gridWidth = gridWidth;
         Block.gridHeight = gridHeight;
     }
@@ -68,8 +80,8 @@ public class GridScripts2 : MonoBehaviour
             go.name = go.name.Replace("(Clone)", "");
             go.transform.position = new Vector3(startX, startY, 0) + new Vector3(v.x, v.y, 0);
             l.Add(go);
-        }
-        blocks.Add(new Block(l));
+        };
+        blocks.Add(new Block(l,pivots[t] + new Vector2(startX,startY)));
         return blocks[blocks.Count - 1];
     }
 
@@ -94,6 +106,11 @@ public class GridScripts2 : MonoBehaviour
                 {
                     activeBlock.Move(new Vector3(0, -1, 0));
                 }
+                if (activeBlock != null && Input.GetKey("w"))
+                {
+
+                    activeBlock.Rotate();
+                }
             }
         }
         else
@@ -117,6 +134,28 @@ public class GridScripts2 : MonoBehaviour
         }
         else
         {
+            if (activeBlock != null)
+            {
+                int i;
+                List<int> deleteRow = new List<int>(4);
+                List<Vector2> deletes= new List<Vector2>();
+                foreach (GameObject p in activeBlock.pieces)
+                {
+                    for (i = 0; i <= gridWidth; i++)
+                        if (Block.grid[i, (int)p.transform.position.y] == false)
+                            break;
+                    if (i == gridWidth)
+                        deleteRow.Add((int)p.transform.position.y);
+                    //deletes.Add(new Vector2(p.transform.position.x, p.transform.position.y));
+                }
+                for (i = 0; i < gridWidth; i++)
+                    foreach (int j in deleteRow)
+                        deletes.Add(new Vector2(i, j));
+
+
+                foreach (Vector2 v in deletes)
+                    blocks.First(b => b.pieces.Any(p => p.transform.position.x == v.x && p.transform.position.y == v.y)).Remove(v);///----------------------
+            }
             activeBlock = CreateBlock();
         }
     }
