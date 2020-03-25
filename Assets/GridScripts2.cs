@@ -12,6 +12,8 @@ public class GridScripts2 : MonoBehaviour
 {
     public GameObject backGround;
     public GameObject playGround;
+    public bool gameOver;
+    public GameObject gameOverScreen;
     public int gridHeight;
     public int gridWidth;
     public List<GameObject> prefabs = new List<GameObject>();
@@ -109,112 +111,119 @@ public class GridScripts2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.anyKey)
+        if (!gameOver)
         {
-            holdTime += Time.deltaTime;
-            if (holdTime > delayTime)
+            if (Input.anyKey)
             {
-                delayTime += holdPeriod;
-                if (activeBlock != null && Input.GetKey("a"))
+                holdTime += Time.deltaTime;
+                if (holdTime > delayTime)
                 {
-                    activeBlock.Move(new Vector3(-1, 0, 0));
-                }
-                if (activeBlock != null && Input.GetKey("d"))
-                {
-                    activeBlock.Move(new Vector3(1, 0, 0));
-                }
-                if (activeBlock != null && Input.GetKey("s"))
-                {
-                    activeBlock.Move(new Vector3(0, -1, 0));
-                }
-                if (activeBlock != null && Input.GetKey("w"))
-                {
-
-                    activeBlock.Rotate();
-                }
-            }
-        }
-        else
-        {
-            delayTime = 0f;
-            holdTime = 0f;
-        }
-
-        if (blocks.Any(b => b.state == true))
-        {
-            currentTime += Time.deltaTime;
-            if (currentTime > actionTime)
-            {
-                actionTime += defaultPeriod;
-                activeBlock.Move(new Vector3(0,-1,0));
-                activeBlock.CheckState();
-            }
-        }
-        else
-        {
-            //if(activeBlock.pieces.Any(p => p.transform.position.y == startY))
-                
-            if (activeBlock != null)
-            {
-                int i;
-                List<int> deleteRow = new List<int>();
-                List<Vector2> deletes= new List<Vector2>();
-                List<int> checkPositionY = new List<int>();
-
-                foreach (GameObject go in activeBlock.pieces)
-                    if (!checkPositionY.Any(num => num == (int)go.transform.position.y))
-                        checkPositionY.Add((int)go.transform.position.y);
-              
-                foreach(int num in checkPositionY)
-                {
-                    for (i = 0; i < gridWidth; i++)
-                        if (Block.grid[i, num] == false)
-                            break;
-                    if (i == gridWidth)
-                        deleteRow.Add(num);
-                }
-
-                for (i = 0; i < gridWidth; i++)
-                {
-                    foreach (int j in deleteRow)
-                        deletes.Add(new Vector2(i, j));
-                }
-
-                if (deleteRow.Count > 0)
-                {
-                    Print();
-                    foreach (Vector2 v in deletes)
-                        blocks.First(b => b.pieces.Any(p => p.transform.position.x == v.x && p.transform.position.y == v.y)).Remove(v);///----------------------
-
-                    int positionY = deleteRow.Max(d => d);
-
-                    List<GameObject> moveObjs = new List<GameObject>();
-
-                    foreach (Block block in blocks)
-                        moveObjs.AddRange(block.pieces.Where(p => p.transform.position.y > positionY));
-               
-                    moveObjs.OrderBy(b => b.transform.position.y).Reverse();
-
-                    for(int j = 0; j < moveObjs.Count; j++)
+                    delayTime += holdPeriod;
+                    if (activeBlock != null && Input.GetKey("a"))
                     {
-                        int x = (int)moveObjs[j].transform.position.x;
-                        int y = (int)moveObjs[j].transform.position.y;
-                        Block.grid[x, y] = false;
-                        moveObjs[j].transform.position += new Vector3(0, -deleteRow.Count, 0);
-                        Block.grid[x, y - deleteRow.Count] = true;
+                        activeBlock.Move(new Vector3(-1, 0, 0));
                     }
-                    List<GameObject> lgs = new List<GameObject>();
-                    foreach (Block block in blocks)
-                        lgs.AddRange(block.pieces);
-
-                    Block.grid = new bool[gridWidth, gridHeight + 1];
-                    foreach (GameObject go in lgs)
-                        Block.grid[(int)go.transform.position.x, (int)go.transform.position.y] = true;
-
-                    Print();
+                    if (activeBlock != null && Input.GetKey("d"))
+                    {
+                        activeBlock.Move(new Vector3(1, 0, 0));
+                    }
+                    if (activeBlock != null && Input.GetKey("s"))
+                    {
+                        activeBlock.Move(new Vector3(0, -1, 0));
+                    }
+                    if (activeBlock != null && Input.GetKey("w"))
+                    {
+                        activeBlock.Rotate();
+                    }
                 }
             }
-            activeBlock = CreateBlock();
+            else
+            {
+                delayTime = 0f;
+                holdTime = 0f;
+            }
+
+            if (blocks.Any(b => b.state == true))
+            {
+                currentTime += Time.deltaTime;
+                if (currentTime > actionTime)
+                {
+                    actionTime += defaultPeriod;
+                    activeBlock.Move(new Vector3(0, -1, 0));
+                    activeBlock.CheckState();
+                }
+            }
+            else
+            {
+                if (activeBlock != null && activeBlock.pieces.Any(p => p.transform.position.y == startY))
+                {
+                    Instantiate(gameOverScreen,transform);
+                    gameOver = true;
+                }
+                if (activeBlock != null)
+                {
+                    int i;
+                    List<int> deleteRow = new List<int>();
+                    List<Vector2> deletes = new List<Vector2>();
+                    List<int> checkPositionY = new List<int>();
+
+                    foreach (GameObject go in activeBlock.pieces)
+                        if (!checkPositionY.Any(num => num == (int)go.transform.position.y))
+                            checkPositionY.Add((int)go.transform.position.y);
+
+                    foreach (int num in checkPositionY)
+                    {
+                        for (i = 0; i < gridWidth; i++)
+                            if (Block.grid[i, num] == false)
+                                break;
+                        if (i == gridWidth)
+                            deleteRow.Add(num);
+                    }
+
+                    for (i = 0; i < gridWidth; i++)
+                    {
+                        foreach (int j in deleteRow)
+                            deletes.Add(new Vector2(i, j));
+                    }
+
+                    if (deleteRow.Count > 0)
+                    {
+                        Print();
+                        foreach (Vector2 v in deletes)
+                            blocks.First(b => b.pieces.Any(p => p.transform.position.x == v.x && p.transform.position.y == v.y)).Remove(v);///----------------------
+
+                        int positionY = deleteRow.Max(d => d);
+
+                        List<GameObject> moveObjs = new List<GameObject>();
+
+                        foreach (Block block in blocks)
+                            moveObjs.AddRange(block.pieces.Where(p => p.transform.position.y > positionY));
+
+                        moveObjs.OrderBy(b => b.transform.position.y).Reverse();
+
+                        for (int j = 0; j < moveObjs.Count; j++)
+                        {
+                            int x = (int)moveObjs[j].transform.position.x;
+                            int y = (int)moveObjs[j].transform.position.y;
+                            Block.grid[x, y] = false;
+                            moveObjs[j].transform.position += new Vector3(0, -deleteRow.Count, 0);
+                            Block.grid[x, y - deleteRow.Count] = true;
+                        }
+                        List<GameObject> lgs = new List<GameObject>();
+                        foreach (Block block in blocks)
+                            lgs.AddRange(block.pieces);
+
+                        Block.grid = new bool[gridWidth, gridHeight + 1];
+                        foreach (GameObject go in lgs)
+                            Block.grid[(int)go.transform.position.x, (int)go.transform.position.y] = true;
+
+                        Print();
+                    }
+                }
+                activeBlock = CreateBlock();
+            }
         }
     }
 }
+
+
