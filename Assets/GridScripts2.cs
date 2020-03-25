@@ -152,6 +152,8 @@ public class GridScripts2 : MonoBehaviour
         }
         else
         {
+            //if(activeBlock.pieces.Any(p => p.transform.position.y == startY))
+                
             if (activeBlock != null)
             {
                 int i;
@@ -162,8 +164,7 @@ public class GridScripts2 : MonoBehaviour
                 foreach (GameObject go in activeBlock.pieces)
                     if (!checkPositionY.Any(num => num == (int)go.transform.position.y))
                         checkPositionY.Add((int)go.transform.position.y);
-                
-
+              
                 foreach(int num in checkPositionY)
                 {
                     for (i = 0; i < gridWidth; i++)
@@ -191,7 +192,9 @@ public class GridScripts2 : MonoBehaviour
 
                     foreach (Block block in blocks)
                         moveObjs.AddRange(block.pieces.Where(p => p.transform.position.y > positionY));
-                    moveObjs.OrderBy(b => b.transform.position.y);
+               
+                    moveObjs.OrderBy(b => b.transform.position.y).Reverse();
+
                     for(int j = 0; j < moveObjs.Count; j++)
                     {
                         int x = (int)moveObjs[j].transform.position.x;
@@ -200,6 +203,14 @@ public class GridScripts2 : MonoBehaviour
                         moveObjs[j].transform.position += new Vector3(0, -deleteRow.Count, 0);
                         Block.grid[x, y - deleteRow.Count] = true;
                     }
+                    List<GameObject> lgs = new List<GameObject>();
+                    foreach (Block block in blocks)
+                        lgs.AddRange(block.pieces);
+
+                    Block.grid = new bool[gridWidth, gridHeight + 1];
+                    foreach (GameObject go in lgs)
+                        Block.grid[(int)go.transform.position.x, (int)go.transform.position.y] = true;
+
                     Print();
                 }
             }
